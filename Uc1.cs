@@ -55,7 +55,7 @@ namespace ContactBook
     }
     class Methods
     {
-        public bool addContact()
+        public void addContact()
         {
             Console.WriteLine("Enter name");
             String firstname = Console.ReadLine();
@@ -82,7 +82,7 @@ namespace ContactBook
             {
                 Console.WriteLine("enter details in a valid format");
                 choice();
-                return false;
+                
             }
             Address a = new Address();
             a.pin = pin;
@@ -102,7 +102,43 @@ namespace ContactBook
             }
             choice();
 
-            return true;
+            
+        }
+        public void delete()
+        {
+
+            Console.WriteLine("enter the firstname to delete");
+            String firstName = Console.ReadLine();
+            Person p = new Person();
+            List<Contact> list = p.getContact();
+            // showContact();
+            // Contact foud= (Contact)from cont in list where cont.firstname.Equals(firstName) select cont;
+            int count = 0;
+            Contact rem = null;
+            foreach (Contact cont in list)
+            {
+                if (cont.firstname.Equals(firstName))
+                {
+                    rem = cont;
+                    count++;
+                }
+
+            }
+            if (count == 0)
+            {
+                Console.WriteLine("in valid name try again");
+                choice();
+            }
+            list.Remove(rem);
+
+            p.update(list);
+            Console.WriteLine("updated");
+            foreach (Contact contact in p.getContact())
+            {
+                Console.WriteLine(contact);
+            }
+            choice();
+
         }
         public void choice()
         {
@@ -110,7 +146,9 @@ namespace ContactBook
             String choice = Console.ReadLine();
             if (choice.Equals("0"))
                 addContact();
-           
+            else if (choice.Equals("1"))
+                delete();
+            
 
         }
 
