@@ -140,16 +140,109 @@ namespace ContactBook
             choice();
 
         }
+        public bool updateContact()
+        {
+            Console.WriteLine("enter first name");
+            String firstName = Console.ReadLine();
+            Person p = new Person();
+            List<Contact> list = p.getContact();
+            int count = 0;
+            foreach (Contact cont in list)
+            {
+                if (cont.firstname.Equals(firstName))
+                {
+                    Console.WriteLine(cont);
+                    count++;
+                }
+
+            }
+            if (count == 0)
+            {
+                Console.WriteLine("no contact found in the given name and available contacts are....");
+                showContact();
+                Console.WriteLine("to continue update press y/n");
+                if (Console.ReadLine().Equals("y"))
+                    this.updateContact();
+                return false;
+            }
+            Console.WriteLine("enter the option");
+
+
+
+
+            Console.WriteLine("press \n 1 for firstname \n 2 for lastname \n 3 for email \n 4 for mobile number \n 5 for zipcode \n 6 for state");
+            // ulong updatedcontact=ulong.Parse(Console.ReadLine());
+            int option = int.Parse(Console.ReadLine());
+            foreach (Contact cont in list)
+            {
+                if (cont.firstname.Equals(firstName))
+                {
+                    switch (option)
+                    {
+                        case 1:
+                            Console.WriteLine("enter first name to update");
+                            cont.firstname = Console.ReadLine();
+                            break;
+                        case 2:
+                            Console.WriteLine("enter last name to update");
+                            cont.lastname = Console.ReadLine();
+                            break;
+                        case 3:
+                            Console.WriteLine("enter email to update");
+                            cont.email = Console.ReadLine();
+                            break;
+                        case 4:
+                            Console.WriteLine("enter mobileNumber to update");
+                            cont.cno = ulong.Parse(Console.ReadLine());
+                            break;
+                        case 5:
+                            Console.WriteLine("enter zip code to update");
+                            cont.address.pin = int.Parse(Console.ReadLine());
+                            break;
+                        case 6:
+                            Console.WriteLine("enter State to update");
+                            cont.address.state = Console.ReadLine();
+                            break;
+                        default:
+                            Console.WriteLine("invalid choice");
+                            break;
+
+                    }
+
+
+                }
+            }
+            p.update(list);
+            Console.WriteLine("updated successfully");
+            choice();
+            return true;
+        }
+
         public void choice()
         {
-            Console.WriteLine("to add more contact press 0 \n 1 for delete contaaact \n 2 for update contact \n 3 for showall");
+            Console.WriteLine("0 for add contact \n 1 for delete contaaact \n 2 for update contact \n 3 for showall");
             String choice = Console.ReadLine();
             if (choice.Equals("0"))
                 addContact();
             else if (choice.Equals("1"))
                 delete();
-            
+            else if (choice.Equals("2"))
+                updateContact();
+            else if (choice.Equals("3"))
+                showContact();
+            else
+                Environment.Exit(0);
 
+        }
+        public void showContact()
+        {
+            Person p = new Person();
+            List<Contact> list = p.getContact();
+            foreach (Contact cont in list)
+            {
+                Console.WriteLine(cont);
+            }
+            choice();
         }
 
     }
