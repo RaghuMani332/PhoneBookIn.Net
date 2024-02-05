@@ -53,6 +53,67 @@ namespace ContactBook
             return String.Format("PinCode is {0} State is {1}",pin,state);
         }
     }
+    class Methods
+    {
+        public bool addContact()
+        {
+            Console.WriteLine("Enter name");
+            String firstname = Console.ReadLine();
+            Console.WriteLine("enter last name");
+            String lastname = Console.ReadLine();
+            Console.WriteLine("enter email");
+            String email = Console.ReadLine();
+            Console.WriteLine("enter contactno");
+            ulong phone = ulong.Parse(Console.ReadLine());
+            Console.WriteLine("enter State");
+            String state = Console.ReadLine();
+            Console.WriteLine("enter zipcode");
+            int pin = int.Parse(Console.ReadLine());
+            Console.WriteLine();
+            List<bool> regex = new List<bool>();
+            // regex.Add(true);
+            regex.Add(Regex.IsMatch(email, @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"));
+            regex.Add(Regex.IsMatch(phone + "", @"^\d{10}$"));
+            // regex.Add(true);
+            regex.Add(Regex.IsMatch("" + pin, @"^\d{6}$"));
 
-   
+            bool v = regex.Any(n => n == false);
+            if (v)
+            {
+                Console.WriteLine("enter details in a valid format");
+                choice();
+                return false;
+            }
+            Address a = new Address();
+            a.pin = pin;
+            a.state = state;
+            Contact c = new Contact();
+            c.email = email;
+            c.cno = phone;
+            c.firstname = firstname;
+            c.lastname = lastname;
+            c.address = a;
+            Person p = new Person();
+            p.setContact(c);
+
+            foreach (Contact contact in p.getContact())
+            {
+                Console.WriteLine(contact);
+            }
+            choice();
+
+            return true;
+        }
+        public void choice()
+        {
+            Console.WriteLine("to add more contact press 0 \n 1 for delete contaaact \n 2 for update contact \n 3 for showall");
+            String choice = Console.ReadLine();
+            if (choice.Equals("0"))
+                addContact();
+           
+
+        }
+
+    }
+
 }
