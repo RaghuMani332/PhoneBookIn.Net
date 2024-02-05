@@ -109,6 +109,10 @@ namespace ContactBook
 
             Console.WriteLine("enter the firstname to delete");
             String firstName = Console.ReadLine();
+            Console.WriteLine("enter the lastname to delete");
+            String lastname = Console.ReadLine();
+            lastname=lastname.ToLower();
+            firstName = firstName.ToLower();
             Person p = new Person();
             List<Contact> list = p.getContact();
             // showContact();
@@ -117,7 +121,7 @@ namespace ContactBook
             Contact rem = null;
             foreach (Contact cont in list)
             {
-                if (cont.firstname.Equals(firstName))
+                if (cont.firstname.Equals(firstName) && cont.lastname.Equals(lastname))
                 {
                     rem = cont;
                     count++;
@@ -144,6 +148,10 @@ namespace ContactBook
         {
             Console.WriteLine("enter first name");
             String firstName = Console.ReadLine();
+            Console.WriteLine("enter the lastname");
+            String lastname = Console.ReadLine();
+            lastname = lastname.ToLower();
+            firstName = firstName.ToLower();
             Person p = new Person();
             List<Contact> list = p.getContact();
             int count = 0;
@@ -175,7 +183,7 @@ namespace ContactBook
             int option = int.Parse(Console.ReadLine());
             foreach (Contact cont in list)
             {
-                if (cont.firstname.Equals(firstName))
+                if (cont.firstname.Equals(firstName)&&cont.lastname.Equals(lastname))
                 {
                     switch (option)
                     {
@@ -220,7 +228,7 @@ namespace ContactBook
 
         public void choice()
         {
-            Console.WriteLine("0 for add contact \n 1 for delete contaaact \n 2 for update contact \n 3 for showall");
+            Console.WriteLine(" 0 for add contact \n 1 for delete contaaact \n 2 for update contact \n 3 for showall");
             String choice = Console.ReadLine();
             if (choice.Equals("0"))
                 addContact();
