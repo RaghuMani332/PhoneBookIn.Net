@@ -1,0 +1,15 @@
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\bin\Debug\net8.0\ContactBook.exe
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\bin\Debug\net8.0\ContactBook.deps.json
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\bin\Debug\net8.0\ContactBook.runtimeconfig.json
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\bin\Debug\net8.0\ContactBook.dll
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\bin\Debug\net8.0\ContactBook.pdb
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.GeneratedMSBuildEditorConfig.editorconfig
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.AssemblyInfoInputs.cache
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.AssemblyInfo.cs
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.csproj.CoreCompileInputs.cache
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.dll
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\refint\ContactBook.dll
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.pdb
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.genruntimeconfig.cache
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ref\ContactBook.dll
+D:\BridgeLabz\CSHARP\ContactBook\ContactBook\obj\Debug\net8.0\ContactBook.sourcelink.json
