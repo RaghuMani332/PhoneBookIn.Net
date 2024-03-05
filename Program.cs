@@ -8,7 +8,7 @@
         {
             
             Methods m = new Methods();
-            m.choice();
+            m.Choice();
 
            
             

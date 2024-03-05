@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -52,53 +53,49 @@ namespace ContactBook
 
     class Person
     {
+        private static List<Contact> contacts = new List<Contact>();
+
         static Person()
         {
-            Console.WriteLine("STATIC CONS START");
-          convertfromFileToVariable();
-            Console.WriteLine("STATIC CONS end");
-
+            ConvertFromFileToVariable();
         }
 
-        private  static List<Contact> contacts = new List<Contact>();
-        //private static List<Contact> contacts = File.ReadAllLines("").ToList();
-        public async static  void convertfromFileToVariable()
+        public static void ConvertFromFileToVariable()
         {
-                    String path = "D:\\BridgeLabz\\CSHARP\\ContactBook\\ContactBook\\contacts.csv";
-          if(!File.Exists(path))
+            String path = "D:\\BridgeLabz\\CSHARP\\ContactBook\\ContactBook\\contacts.csv";
+            if (!File.Exists(path))
             {
-                File.Create(path ).Dispose();
+                File.Create(path).Dispose();
             }
-            
-            List<String> li= File.ReadAllLines(path).ToList();
-            for(int i = 1; i < li.Count; i++)
+
+            List<String> lines = File.ReadAllLines(path).ToList();
+            for (int i = 1; i < lines.Count; i++)
             {
                 Contact c = new Contact();
-                String[] fields = li[i].Split(",");
+                String[] fields = lines[i].Split(",");
 
                 c.address = new Address();
                 c.firstname = fields[0];
-                c.lastname= fields[1];
+                c.lastname = fields[1];
                 c.cno = ulong.Parse(fields[2]);
                 c.email = fields[3];
                 c.address.state = fields[4];
-               c.address.pin = int.Parse(fields[5]);
+                c.address.pin = int.Parse(fields[5]);
                 contacts.Add(c);
             }
-          //  Console.WriteLine(c);
-          
         }
-        public void update(List<Contact> contact)
+
+        public void Update(List<Contact> contact)
         {
             contacts = contact;
         }
 
-        public void setContact(Contact contact)
+        public void SetContact(Contact contact)
         {
             contacts.Add(contact);
         }
 
-        public List<Contact> getContact()
+        public List<Contact> GetContact()
         {
             return contacts;
         }
@@ -132,7 +129,8 @@ namespace ContactBook
     class Methods
     {
         String path = "D:\\BridgeLabz\\CSHARP\\ContactBook\\ContactBook\\contacts.csv";
-        public void addContact()
+
+        public void AddContact()
         {
             Console.WriteLine("Enter name");
             string firstname = Console.ReadLine();
@@ -163,7 +161,7 @@ namespace ContactBook
                 {
                     throw new InvalidInputFormatException("Invalid pin code format. Please enter a valid 6-digit pin code.");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
@@ -172,46 +170,17 @@ namespace ContactBook
 
             // Check if the contact already exists
             Person p = new Person();
-            List<Contact> contacts = p.getContact();
+            List<Contact> contacts = p.GetContact();
             bool contactNameExists = contacts.Any(c => c.firstname.Equals(firstname, StringComparison.OrdinalIgnoreCase) &&
                                                        c.lastname.Equals(lastname, StringComparison.OrdinalIgnoreCase));
             bool emailExists = contacts.Any(c => c.email.Equals(email, StringComparison.OrdinalIgnoreCase));
             bool phoneExists = contacts.Any(c => c.cno == phone);
 
-            if (contactNameExists)
+            if (contactNameExists || emailExists || phoneExists)
             {
-                try
-                {
-                    throw new ContactNameAlreadyExistsException("Contact with the same name already exists.");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            if (emailExists)
-            {
-               try
-                {
-                    throw new EmailAlreadyExistsException("Contact with the same email already exists.");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            if (phoneExists)
-            {
-               try
-                {
-                    throw new MobileNumberAlreadyExistsException("Contact with the same mobile number already exists.");
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                Console.WriteLine("Contact already exists. Not adding to the list.");
+                Choice(); // You might want to return here instead if you don't want to continue after this.
+                return;
             }
 
             // Validate email, phone, and pin
@@ -226,48 +195,21 @@ namespace ContactBook
 
             Address a = new Address { pin = pin, state = state };
             Contact c = new Contact { firstname = firstname, lastname = lastname, email = email, cno = phone, address = a };
-            p.setContact(c);
+            p.SetContact(c);
 
-            foreach (Contact contact in p.getContact())
+            foreach (Contact contact in p.GetContact())
             {
                 Console.WriteLine(contact);
             }
             AddInFile(p);
 
-             choice();
+            Choice();
         }
-        /*public void UpdateInFile(Person p)
-        {
-            List<String> oldcont = File.ReadAllLines(path).ToList();
-            File.WriteAllText(path, String.Empty); 
-            StreamWriter sw = new StreamWriter(path, append: false);
-            sw.AutoFlush = true;
-            
-            if (oldcont.Count == 0)
-            {
-                sw.WriteLine("firstName,LastName,c.no,Email,state,pin");
-            }
-            foreach (String i in oldcont)
-            {
-                // String toAdd = String.Format("{0},{1},{2},{3},{4},{5}", i.firstname, i.lastname, i.cno, i.email, i.address.state, i.address.pin);
 
-                sw.WriteLine(i);
-            }
-            foreach (var i in p.getContact())
-            {
-                
-                String toAdd = String.Format("{0},{1},{2},{3},{4},{5}", i.firstname, i.lastname, i.cno, i.email, i.address.state, i.address.pin);
-                
-                sw.WriteLine(toAdd);
-            }
-         
-            sw.Dispose();
-            sw.Close();
-        }*/
         public void UpdateInFile(Person p)
         {
             List<String> lines = File.ReadAllLines(path).ToList();
-            List<Contact> contacts = p.getContact();
+            List<Contact> contacts = p.GetContact();
 
             using (StreamWriter sw = new StreamWriter(path, append: false))
             {
@@ -285,45 +227,44 @@ namespace ContactBook
                         c.address.state == fields[4] &&
                         c.address.pin.ToString() == fields[5]);
 
-                    // Write the line back if the contact is not found in the updated list
-                    if (existingContact == null)
+                    // Write the updated line if the contact is found in the updated list
+                    if (existingContact != null)
                     {
-                        sw.WriteLine(line);
+                        String toUpdate = String.Format("{0},{1},{2},{3},{4},{5}",
+                                                        existingContact.firstname,
+                                                        existingContact.lastname,
+                                                        existingContact.cno,
+                                                        existingContact.email,
+                                                        existingContact.address.state,
+                                                        existingContact.address.pin);
+                        sw.WriteLine(toUpdate);
                     }
-                }
-
-                // Add updated contacts
-                foreach (var contact in contacts)
-                {
-                    String toAdd = String.Format("{0},{1},{2},{3},{4},{5}", contact.firstname, contact.lastname, contact.cno, contact.email, contact.address.state, contact.address.pin);
-                    sw.WriteLine(toAdd);
                 }
             }
         }
 
         public void AddInFile(Person p)
         {
-           Console.WriteLine("file method invoked");
-            if(!File.Exists(path))
+            Console.WriteLine("file method invoked");
+            if (!File.Exists(path))
             {
                 File.Create(path).Dispose();
             }
             List<String> oldcont = File.ReadAllLines(path).ToList();
-           // File.WriteAllText(path, String.Empty);
-            StreamWriter sw=new StreamWriter(path,append:true);
-            sw.AutoFlush=true;
-            if(oldcont.Count== 0) {
+            StreamWriter sw = new StreamWriter(path, append: true);
+            sw.AutoFlush = true;
+            if (oldcont.Count == 0)
+            {
                 sw.WriteLine("firstName,LastName,c.no,Email,state,pin");
             }
-            Contact ContToAdd = p.getContact()[p.getContact().Count() - 1];
-            String toAdd = String.Format("{0},{1},{2},{3},{4},{5}",ContToAdd.firstname, ContToAdd.lastname, ContToAdd.cno, ContToAdd.email, ContToAdd.address.state, ContToAdd.address.pin);
-            //oldcont.Add(toAdd);
+            Contact ContToAdd = p.GetContact()[p.GetContact().Count() - 1];
+            String toAdd = String.Format("{0},{1},{2},{3},{4},{5}", ContToAdd.firstname, ContToAdd.lastname, ContToAdd.cno, ContToAdd.email, ContToAdd.address.state, ContToAdd.address.pin);
             sw.WriteLine(toAdd);
             sw.Dispose();
             sw.Close();
         }
 
-        public void delete()
+        public void Delete()
         {
             Console.WriteLine("Enter the first name to delete");
             string firstName = Console.ReadLine();
@@ -333,7 +274,7 @@ namespace ContactBook
             firstName = firstName.ToLower();
 
             Person p = new Person();
-            List<Contact> list = p.getContact();
+            List<Contact> list = p.GetContact();
 
             int count = 0;
             Contact rem = null;
@@ -350,16 +291,16 @@ namespace ContactBook
             if (count == 0)
             {
                 Console.WriteLine("Invalid name. Please try again.");
-                choice();
+                Choice();
             }
 
             try
             {
                 list.Remove(rem);
-                p.update(list);
+                p.Update(list);
                 Console.WriteLine("Updated");
 
-                foreach (Contact contact in p.getContact())
+                foreach (Contact contact in p.GetContact())
                 {
                     Console.WriteLine(contact);
                 }
@@ -369,10 +310,10 @@ namespace ContactBook
                 Console.WriteLine("Error deleting contact: " + ex.Message);
             }
             UpdateInFile(p);
-            choice();
+            Choice();
         }
 
-        public bool updateContact()
+        public bool UpdateContact()
         {
             Console.WriteLine("Enter first name");
             string firstName = Console.ReadLine();
@@ -381,13 +322,13 @@ namespace ContactBook
             lastName = lastName.ToLower();
             firstName = firstName.ToLower();
 
-            Person p= new Person();
-            List<Contact> list = p.getContact();
+            Person p = new Person();
+            List<Contact> list = p.GetContact();
             int count = 0;
 
             foreach (Contact cont in list)
             {
-                if (cont.firstname.Equals(firstName,StringComparison.OrdinalIgnoreCase) && cont.lastname.Equals(lastName,StringComparison.OrdinalIgnoreCase))
+                if (cont.firstname.Equals(firstName, StringComparison.OrdinalIgnoreCase) && cont.lastname.Equals(lastName, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine(cont);
                     count++;
@@ -397,10 +338,10 @@ namespace ContactBook
             if (count == 0)
             {
                 Console.WriteLine("No contact found with the given name.");
-                showContact();
+                ShowContact();
                 Console.WriteLine("Do you want to continue updating? (y/n)");
                 if (Console.ReadLine().Equals("y", StringComparison.OrdinalIgnoreCase))
-                    return updateContact();
+                    return UpdateContact();
                 return false;
             }
 
@@ -411,7 +352,7 @@ namespace ContactBook
             if (!int.TryParse(Console.ReadLine(), out option) || option < 1 || option > 6)
             {
                 Console.WriteLine("Invalid option.");
-                choice();
+                Choice();
                 return false;
             }
 
@@ -474,102 +415,119 @@ namespace ContactBook
                     }
                 }
 
-                p.update(list);
+                p.Update(list);
                 UpdateInFile(p);
 
-
-                choice();
+                Choice();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error updating contact: " + ex.Message);
-                choice();
+                Choice();
                 return false;
             }
         }
 
-        public void choice()
+        public void Choice()
         {
-            Console.WriteLine("0 for Add Contact\n1 for Delete Contact\n2 for Update Contact\n3 for Show All Contacts\n4 for GetByPinOrState\n5 for get Count Based on PinOrState\n6 for delete all");
+            Console.WriteLine("0 for Add Contact\n1 for Delete Contact\n2 for Update Contact\n3 for Show All Contacts\n4 for GetByPinOrState\n5 for Get Count Based on PinOrState\n6 for Delete All\n7 for Exit");
             string choice = Console.ReadLine();
-            if (choice.Equals("0"))
-                addContact();
-            else if (choice.Equals("1"))
-                delete();
-            else if (choice.Equals("2"))
-                updateContact();
-            else if (choice.Equals("3"))
-                showContact();
-            else if (choice.Equals("4"))
+            switch (choice)
             {
-                GetByPinOrState();
-                this.choice();
+                case "0":
+                    AddContact();
+                    break;
+                case "1":
+                    Delete();
+                    break;
+                case "2":
+                    UpdateContact();
+                    break;
+                case "3":
+                    ShowContact();
+                    break;
+                case "4":
+                    GetByPinOrState();
+                    Choice();
+                    break;
+                case "5":
+                    Console.WriteLine(GetByPinOrState());
+                    Choice();
+                    break;
+                case "6":
+                    Console.WriteLine("Deleting all contacts...");
+                    DeleteAll();
+                    Choice();
+                    break;
+                case "7":
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice.");
+                    Choice();
+                    break;
             }
-               
-            else if (choice.Equals("5"))
-            {
-                Console.WriteLine(GetByPinOrState());
-                this.choice();
-            }
-            else if(choice.Equals("6"))
-            {
-                File.WriteAllText(path,string.Empty);
-                this.choice();
-            }
-            else
-                Environment.Exit(0);
         }
 
         public int GetByPinOrState()
         {
-            int count = 0;
-            Console.WriteLine("press 1 for search by state \npress 2 for search by ZipCode");
+            Console.WriteLine("Press 1 for search by state \nPress 2 for search by ZipCode");
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine("enter state ");
-                    String stateToSearch=Console.ReadLine();
-                    List<Contact> c =new Person().getContact();
-                    var v=c.Where(state=>state.address.state.Equals(stateToSearch,StringComparison.OrdinalIgnoreCase));
+                    Console.WriteLine("Enter state ");
+                    string stateToSearch = Console.ReadLine();
+                    List<Contact> contacts = new Person().GetContact();
+                    var v = contacts.Where(state => state.address.state.Equals(stateToSearch, StringComparison.OrdinalIgnoreCase));
                     foreach (var i in v)
                     {
-                        count++;
                         Console.WriteLine(i);
                     }
-                    
-                    break;
+                    return v.Count();
                 case "2":
-                    Console.WriteLine("enter Zipcode");
-                    int pinToSearch=int.Parse(Console.ReadLine());
-                    List<Contact> contacts = new Person().getContact();
-                    var v1=contacts.Where(pin => pin.address.pin==pinToSearch);
-                    foreach(var i in v1)
+                    Console.WriteLine("Enter Zipcode");
+                    int pinToSearch;
+                    if (int.TryParse(Console.ReadLine(), out pinToSearch))
                     {
-                        count++;
-                        Console.WriteLine(i);
+                        List<Contact> contacts1 = new Person().GetContact();
+                        var v1 = contacts1.Where(pin => pin.address.pin == pinToSearch);
+                        foreach (var i in v1)
+                        {
+                            Console.WriteLine(i);
+                        }
+                        return v1.Count();
                     }
-                   
-                    break;
+                    else
+                    {
+                        Console.WriteLine("Invalid Zipcode format.");
+                        return 0;
+                    }
                 default:
-                    Console.WriteLine("invalid choice");
-                   
-                    break;
-
+                    Console.WriteLine("Invalid choice");
+                    return 0;
             }
-            return count;
         }
 
-        public void showContact()
+        public void ShowContact()
         {
             Person p = new Person();
-            List<Contact> list = p.getContact();
+            List<Contact> list = p.GetContact();
 
             foreach (Contact cont in list)
             {
                 Console.WriteLine(cont);
             }
-            choice();
+            Choice();
+        }
+
+        public void DeleteAll()
+        {
+            File.WriteAllText(path, string.Empty);
+            Console.WriteLine("All contacts deleted successfully.");
         }
     }
 }
+
+    
+
